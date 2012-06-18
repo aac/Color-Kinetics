@@ -20,7 +20,6 @@ module ColorKinetics
 
     def send(data, port=1)
       packet = header(port) << data << padding(data.size)
-      # puts "packet: #{packet.inspect}"
       @socket.send(packet,
                   0, #flags
                   @ip,
@@ -89,6 +88,14 @@ module ColorKinetics
       @base_channel = base_channel
       @ip = '10.0.115.174'
     end
+
+    def header(port=1)
+        ["0401dc4a0100010100000000#{'00'}000000ffffffff00"].pack('H42')
+    end 
+
+    def padding(count)
+      '' #[''].pack("H#{(536-header().size-count) * 2}")
+    end 
 
     def set_color(r,g,b)
       set([@base_channel, @base_channel+1, @base_channel+2],
