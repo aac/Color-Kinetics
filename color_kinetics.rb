@@ -1,8 +1,14 @@
 require 'socket'
 module ColorKinetics
   module Fixture
+    def wired_ip
+      %x(ifconfig).match /en0(.*\n)+\s*inet\s(\d+\.\d+\.\d+\.\d+)\s/
+      $2
+    end 
+
     def initialize(*args)
       @socket = UDPSocket.new
+      @socket.bind(wired_ip,0)
     end
 
     def header(port=1)
@@ -30,7 +36,7 @@ module ColorKinetics
     def set(channel, data, port=1)
       if channel.is_a? Array
         if data.is_a? Array
-	  d = data.map{|d| int_helper(d)}.pack(channel.map{|c| "@#{c}H2"}.join+"@512")
+	  d = data.map{|d| int_helper(d)}.pack(channel.map{|c| "@#{c-1}H2"}.join+"@512")
 	  send(d, port)
         else
         end
