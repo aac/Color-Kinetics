@@ -2,8 +2,10 @@ require 'socket'
 module ColorKinetics
   module Fixture
     def wired_ip
-      %x(ifconfig).match /en0(.*\n)+\s*inet\s(\d+\.\d+\.\d+\.\d+)\s/
-      $2
+      output = %x(ifconfig)
+      output.match /en0(.*\n)+?\s*inet\s(\d+\.\d+\.\d+\.\d+)\s/
+      ip = $2
+      ip
     end 
 
     def initialize(*args)
