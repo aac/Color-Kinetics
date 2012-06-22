@@ -12,5 +12,10 @@ module ColorKinetics
     def set_color(r,g,b)
       @power_supply.set(@base_channel, r, g, b)
     end
+
+    def set_color!(r,g,b)
+      set_color(r,g,b)
+      @power_supply.update
+    end
   end
 end
