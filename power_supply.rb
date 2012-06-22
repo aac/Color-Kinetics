@@ -1,10 +1,27 @@
+require 'socket'
 module ColorKinetics
   class PowerSupply
     attr_reader :state
 
+    def self.wired_ip
+      output = %x(ifconfig)
+      output.match /en0(.*\n)+?\s*inet\s(\d+\.\d+\.\d+\.\d+)\s/
+      ip = $2
+      ip
+    end
+
+    def self.getSocket
+      if @socket.nil?
+        @socket = UDPSocket.new
+        @socket.bind(wired_ip,0)
+      end
+      @socket
+    end
+
     def initialize(ip)
       @ip = ip
       @fixtures = []
+      @socket = PowerSupply.getSocket()
       clear
     end
 
@@ -47,7 +64,6 @@ module ColorKinetics
         channel = channels-1
         @state[channel...(channel+args.size)]= args.map{|d| int_helper(d)}.pack(args.size.times.collect{'H2'}.join)
       end
-      puts @state
     end
   end
 
